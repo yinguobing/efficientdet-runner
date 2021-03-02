@@ -1,4 +1,5 @@
 """Tool to run a model."""
+import cv2
 import tensorflow as tf
 
 
@@ -11,9 +12,24 @@ class Detector(object):
         Args:
             saved_model: the string path to the SavedModel.
         """
+        self.scale_width = 0
+        self.scale_height = 0
+        self.input_width = 512
+        self.input_height = 512
         # Load the SavedModel object.
         imported = tf.saved_model.load('saved_model')
         self.__predict_fn = imported.signatures["serving_default"]
+
+    def preprocess(self, image):
+        """Preprocess the input image."""
+        height, width, _ = image.shape
+        self.scale_width = width / self.input_width
+        self.scale_height = height / self.input_height
+
+        image = cv2.resize(image, (self.input_width, self.input_height))
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+        return image
 
     def __filter(self, detections, threshold):
         """Filter the detection results by score threshold."""
@@ -42,6 +58,10 @@ class Detector(object):
         frame_tensor = tf.constant(image, dtype=tf.uint8)
         frame_tensor = tf.expand_dims(frame_tensor, axis=0)
         detections = self.__predict_fn(frame_tensor)
-        predictions = self.__filter(detections, threshold)
+        boxes, scores, classes = self.__filter(detections, threshold)
 
-        return predictions
+        # Scale the box back to the original image size.
+        boxes[:, ::2] *= self.scale_height
+        boxes[:, 1::2] *= self.scale_width
+
+        return boxes, scores, classes

@@ -36,8 +36,7 @@ if __name__ == '__main__':
             break
 
         # Prepare the input image.
-        frame = cv2.resize(frame, (512, 512))
-        frame_raw = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame_raw = detector.preprocess(frame)
 
         # Run the model
         predictions = detector.predict(frame_raw, 0.4)
