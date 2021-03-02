@@ -50,7 +50,7 @@ git clone https://github.com/yinguobing/efficientdet-runner.git
 检测一段视频。
 
 ```bash
-python3 runner.py --video=input.mov
+python3 demo.py --video=input.mov
 ```
 
 ## 致谢
