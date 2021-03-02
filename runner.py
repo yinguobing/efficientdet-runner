@@ -1,30 +1,41 @@
-"""Tool to inspect a model."""
-from argparse import ArgumentParser
-
-import cv2
-import numpy as np
+"""Tool to run a model."""
 import tensorflow as tf
 
-parser = ArgumentParser()
-parser.add_argument("--video", type=str, default=None,
-                    help="Video file to be processed.")
-args = parser.parse_args()
+
+class Runner(object):
+    """Mini module to run the EfficientDet model."""
+
+    def __init__(self, saved_model):
+        """Build an EfficientDet model runner.
+
+        Args:
+            saved_model: the string path to the SavedModel.
+        """
+        # Load the SavedModel object.
+        imported = tf.saved_model.load('saved_model')
+        self.predict = imported.signatures["serving_default"]
+
 
 if __name__ == '__main__':
+    from argparse import ArgumentParser
+    parser = ArgumentParser()
+    parser.add_argument("--video", type=str, default=None,
+                    help="Video file to be processed.")
+    args = parser.parse_args()
+
     # Set GPU memory.
-    # tf.config.run_functions_eagerly(FLAGS.debug)
     devices = tf.config.list_physical_devices('GPU')
     for device in devices:
         tf.config.experimental.set_memory_growth(device, True)
 
-    # Load the SavedModel object.
-    imported = tf.saved_model.load('saved_model')
-    predict = imported.signatures["serving_default"]
+    # Summon a model runner.
+    runner = Runner('saved_model')
 
     # Set the threshold for valid detections.
     threshold = 0.4
 
     # Construct video source.
+    import cv2
     cap = cv2.VideoCapture(args.video)
     if not cap.isOpened():
         print('Error opening input video: {}'.format(args.video))
@@ -42,7 +53,7 @@ if __name__ == '__main__':
         frame_raw = tf.expand_dims(frame_raw, axis=0)
 
         # Run the model
-        detections = predict(frame_raw)
+        detections = runner.predict(frame_raw)
 
         # Get the detection results.
         boxes = detections['output_0'].numpy()[0]
