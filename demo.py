@@ -1,7 +1,9 @@
 """Demo of running EfficientDet detection."""
 
 from argparse import ArgumentParser
+
 import cv2
+
 from detector import Detector
 
 parser = ArgumentParser()
@@ -32,15 +34,15 @@ if __name__ == '__main__':
         frame_raw = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
         # Run the model
-        detections = detector.predict([frame_raw], 0.4)
+        predictions = detector.predict(frame_raw, 0.4)
 
         # Draw the bounding boxes. This is the MINIMAL code to show the
         # detection result. I believe you are able to draw the class names and
         # scores on the original frames.
-        # for boxes, scores, classes in detections:
-        #     for box, score, class_ in zip(boxes, scores, classes):
-        #         cv2.rectangle(frame, (int(box[1]), int(box[0])),
-        #                       (int(box[3]), int(box[2])), (0, 255, 0), 2)
+        boxes, scores, classes = predictions
+        for box, score, class_ in zip(boxes, scores, classes):
+            cv2.rectangle(frame, (int(box[1]), int(box[0])),
+                          (int(box[3]), int(box[2])), (0, 255, 0), 2)
 
         # show the frame online, mainly used for real-time speed test.
         cv2.imshow('Frame', frame)

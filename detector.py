@@ -30,17 +30,18 @@ class Detector(object):
 
         return boxes, scores, classes
 
-    def predict(self, images, threshold):
+    def predict(self, image, threshold):
         """Run inference with image inputs.
 
         Args:
-            images: a list of numpy array as input images.
+            image: a numpy array as an input image.
 
         Returns:
-            predictions: result batch.
+            predictions: result.
         """
-        frame_tensor = tf.constant(images, dtype=tf.uint8)
+        frame_tensor = tf.constant(image, dtype=tf.uint8)
+        frame_tensor = tf.expand_dims(frame_tensor, axis=0)
         detections = self.__predict_fn(frame_tensor)
-        results = self.__filter(detections, threshold)
+        predictions = self.__filter(detections, threshold)
 
-        return results
+        return predictions
