@@ -3,6 +3,9 @@ Minimal code to run the official EfficientDet model.
 
 本项目提供了执行EfficientDet模型推演的最小代码模块。
 
+![TensorFlow](https://img.shields.io/badge/TensorFlow-v2.4-brightgreen)
+![OpenCV](https://img.shields.io/badge/OpenCV-v4.5-brightgreen)
+
 ## 准备工作
 最小代码意味着你需要以 `SavedModel` 格式存储模型。请在官方实现中完成模型转换工作。
 
@@ -38,20 +41,27 @@ python3 -m keras.inspector --mode=export --model_name=efficientdet-d0 \
 
 该命令会同时保存一份冻结后的模型文件，以便有需要的情况下使用。
 
-## 运行
+## 安装
 获取本项目的代码。
 
 ```bash
 git clone https://github.com/yinguobing/efficientdet-runner.git
 ```
 
-将导出的模型文件夹存储在 `saved_model` 目录下。
-
-检测一段视频。
+## 运行
+实现视频检测的示例文件 `demp.py`，记得将导出的模型文件夹存储在 `saved_model` 目录下。
 
 ```bash
 python3 demo.py --video=input.mov
 ```
+
+## 作者
+尹国冰 - [yinguobing](https://yinguobing.com/)
+
+![wechat](docs/wechat.png)
+
+## License
+![GitHub](https://img.shields.io/github/license/yinguobing/efficientdet-runner)
 
 ## 致谢
 官方实现：https://github.com/google/automl
