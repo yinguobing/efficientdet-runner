@@ -8,6 +8,8 @@ from detector import Detector
 parser = ArgumentParser()
 parser.add_argument("--video", type=str, default=None,
                     help="Video file to be processed.")
+parser.add_argument("--output", type=str, default=None,
+                    help="Video file to be written.")
 args = parser.parse_args()
 
 # This is the label names for the default checkpoint file with COCO dataset.
@@ -107,6 +109,15 @@ if __name__ == '__main__':
     if not cap.isOpened():
         print('Error opening input video: {}'.format(args.video))
 
+    # Use video writer to write processed video file.
+    if args.output:
+        video_writer = cv2.VideoWriter(
+            args.output,
+            cv2.VideoWriter_fourcc('a', 'v', 'c', '1'),
+            cap.get(cv2.CAP_PROP_FPS),
+            (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
+             int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
+
     # Use meter to calculate FPS.
     meter = cv2.TickMeter()
 
@@ -144,6 +155,10 @@ if __name__ == '__main__':
 
         # show the frame online, mainly used for real-time speed test.
         cv2.imshow('Frame', frame)
+
+        # And write the processed video file.
+        if args.output:
+            video_writer.write(frame)
 
         # Press ESC to quit.
         if cv2.waitKey(1) == 27:
