@@ -3,6 +3,8 @@ Minimal code to run the official EfficientDet model.
 
 本项目提供了执行EfficientDet模型推演的最小代码模块。
 
+![demo](https://user-images.githubusercontent.com/10267910/109780319-dd277080-7c41-11eb-9704-e4db863f1bdc.gif)
+
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-v2.4-brightgreen)
 ![OpenCV](https://img.shields.io/badge/OpenCV-v4.5-brightgreen)
 
