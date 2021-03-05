@@ -1,5 +1,6 @@
 """Tool to run a model."""
 import cv2
+import numpy as np
 import tensorflow as tf
 
 
@@ -14,20 +15,30 @@ class Detector(object):
         """
         self.scale_width = 0
         self.scale_height = 0
-        self.input_width = 512
-        self.input_height = 512
+        self.input_size = 512
+
         # Load the SavedModel object.
         imported = tf.saved_model.load('saved_model')
         self.__predict_fn = imported.signatures["serving_default"]
 
     def preprocess(self, image):
         """Preprocess the input image."""
-        height, width, _ = image.shape
-        self.scale_width = width / self.input_width
-        self.scale_height = height / self.input_height
 
-        image = cv2.resize(image, (self.input_width, self.input_height))
+        # Scale the image first.
+        height, width, _ = image.shape
+        padding_edge = 0 if height > width else 1
+        self.ratio = self.input_size / max(height, width)
+        image = cv2.resize(
+            image, (int(self.ratio * width), int(self.ratio * height)))
+
+        # Convert to RGB.
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+        # Then pad the image to input size.
+        self.padding_h = self.input_size - int(self.ratio * width)
+        self.padding_v = self.input_size - int(self.ratio * height)
+        image = cv2.copyMakeBorder(
+            image, 0, self.padding_v, 0, self.padding_h, cv2.BORDER_CONSTANT, (0, 0, 0))
 
         return image
 
@@ -61,7 +72,12 @@ class Detector(object):
         boxes, scores, classes = self.__filter(detections, threshold)
 
         # Scale the box back to the original image size.
-        boxes[:, ::2] *= self.scale_height
-        boxes[:, 1::2] *= self.scale_width
+        boxes /= self.ratio
+
+        # Crop out the padding area.
+        boxes[:, 2] = np.minimum(
+            boxes[:, 2], (self.input_size - self.padding_v)/self.ratio)
+        boxes[:, 1] = np.minimum(
+            boxes[:, 1], (self.input_size - self.padding_h)/self.ratio)
 
         return boxes, scores, classes
