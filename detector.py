@@ -26,7 +26,6 @@ class Detector(object):
 
         # Scale the image first.
         height, width, _ = image.shape
-        padding_edge = 0 if height > width else 1
         self.ratio = self.input_size / max(height, width)
         image = cv2.resize(
             image, (int(self.ratio * width), int(self.ratio * height)))
