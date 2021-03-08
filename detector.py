@@ -115,17 +115,21 @@ class Detector(object):
         """Clip the boxes to the safe margins.
 
         Args:
-            boxes: input boxes [[ymin, xmin, ymax, xmax], ...]
+            boxes: input boxes [[ymin, xmin, ymax, xmax], ...].
             margins: a tuple of 4 int (top, left, bottom, right) as safe margins.
 
         Returns:
-            clipped boxes.
+            boxes: clipped boxes.
+            clip_mark: the mark of clipped sides.
         """
         top, left, bottom, right = margins
+
+        clip_mark = (boxes[:, 0] < top, boxes[:, 1] < left,
+                     boxes[:, 2] > bottom, boxes[:, 3] > right)
 
         boxes[:, 0] = np.maximum(boxes[:, 0], top)
         boxes[:, 1] = np.maximum(boxes[:, 1], left)
         boxes[:, 2] = np.minimum(boxes[:, 2], bottom)
         boxes[:, 3] = np.minimum(boxes[:, 3], right)
 
-        return boxes
+        return boxes, clip_mark
