@@ -1,4 +1,8 @@
-"""Tool to run a model."""
+"""Object detector based on EfficientDet model.
+
+This module supports inferenceing with the official EfficientDet model. 
+For more details: https://github.com/yinguobing/efficientdet-runner
+"""
 import cv2
 import numpy as np
 import tensorflow as tf
