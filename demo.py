@@ -138,7 +138,7 @@ if __name__ == '__main__':
         frame_raw = detector.preprocess(frame)
 
         # Run the model
-        predictions = detector.predict(frame_raw, 0.4)
+        predictions = detector.predict(frame_raw, threshold)
 
         # Stop the timmer.
         meter.stop()
