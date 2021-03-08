@@ -80,3 +80,29 @@ class Detector(object):
             boxes[:, 1], (self.input_size - self.padding_h)/self.ratio)
 
         return boxes, scores, classes
+
+    def transform_to_square(self, boxes, scale=1.0, offset=(0, 0)):
+        """Get the square bounding boxes.
+
+        Args:
+            boxes: input boxes [[ymin, xmin, ymax, xmax], ...]
+            scale: ratio to scale the boxes
+            offset: a tuple of offset to move the boxes (x, y)
+
+        Returns:
+            square boxes.
+        """
+        # Make them squares.
+        ymins, xmins, ymaxs, xmaxs = np.split(boxes, 4, 1)
+        center_x = np.floor_divide(xmins + xmaxs, 2)
+        center_y = np.floor_divide(ymins + ymaxs, 2)
+        margin = np.floor_divide(np.maximum(ymaxs - ymins,
+                                            xmaxs - xmins) * scale, 2)
+        boxes = np.concatenate((center_y-margin, center_x-margin,
+                                center_y+margin, center_x+margin), axis=1)
+
+        # Move
+        boxes[:, 1::2] += offset[0]
+        boxes[:, ::2] += offset[1]
+
+        return boxes

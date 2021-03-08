@@ -142,6 +142,7 @@ if __name__ == '__main__':
 
         # Draw the bounding boxes and the class names.
         boxes, scores, classes = predictions
+        boxes = detector.transform_to_square(boxes, 1.2, (0, 0))
         for box, score, class_ in zip(boxes, scores, classes):
             y0, x0, y1, x1 = [int(b) for b in box]
             cv2.rectangle(frame, (x0, y0), (x1, y1), (0, 255, 0), 2)
